@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import './App.css'
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [todos, setTodos] = useState([
-    { text: "todo1", isCompleted: false },
-    { text: "todo2", isCompleted: false },
-    { text: "todo3", isCompleted: false }
+    { id:uuidv4(), text: "todo1", isCompleted: false },
+    { id:uuidv4(), text: "todo2", isCompleted: false },
+    { id:uuidv4(), text: "todo3", isCompleted: false }
   ]);
 
   const [newTodoText, setNewTodoText] = useState('');
@@ -21,7 +22,7 @@ function App() {
     if (newTodoText === "") {
       return
     }
-    const newTodos = [...todos, { text: newTodoText, isCompleted: false }]
+    const newTodos = [...todos, { id:uuidv4(), text: newTodoText, isCompleted: false }]
     setTodos(newTodos);
     setNewTodoText('');
   }
@@ -69,7 +70,7 @@ function App() {
         <ul>
 
           {todos.map((todo, index) => (
-            <li key={todo.text}>
+            <li key={todo.id}>
               {editIndex === index ? (
                 <>
                   <input type="text" value={editText} onChange={onChangeEditText} />
@@ -88,8 +89,8 @@ function App() {
           )}
         </ul>
         <div className="counter-wrap">
-          <p>未完了:{todos.filter(todo => todo.isCompleted === false).length}</p>
-          <p>完了:{todos.filter(todo => todo.isCompleted === true).length}</p>
+          <p>未完了:{todos.filter(todo => !todo.isCompleted).length}</p>
+          <p>完了:{todos.filter(todo => todo.isCompleted).length}</p>
           <p>合計:{todos.length}</p>
         </div>
       </div>
