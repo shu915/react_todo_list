@@ -4,15 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [todos, setTodos] = useState([
-    { id:uuidv4(), text: "todo1", isCompleted: false },
-    { id:uuidv4(), text: "todo2", isCompleted: false },
-    { id:uuidv4(), text: "todo3", isCompleted: false }
+    { id: uuidv4(), text: "todo1", isCompleted: false },
+    { id: uuidv4(), text: "todo2", isCompleted: false },
+    { id: uuidv4(), text: "todo3", isCompleted: false }
   ]);
 
   const [newTodoText, setNewTodoText] = useState('');
 
   const [editText, setEditText] = useState('');
-  const [editIndex, setEditIndex] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const onChangeNewTodoText = (e) => {
     setNewTodoText(e.target.value)
@@ -22,39 +22,45 @@ function App() {
     if (newTodoText === "") {
       return
     }
-    const newTodos = [...todos, { id:uuidv4(), text: newTodoText, isCompleted: false }]
+    const newTodos = [...todos, { id: uuidv4(), text: newTodoText, isCompleted: false }]
     setTodos(newTodos);
     setNewTodoText('');
   }
 
-  const onClickDelete = (index) => {
+  const onClickDelete = (id) => {
     const isConfirmed = window.confirm('本当に削除していいですか？');
     if (isConfirmed) {
-      const newTodos = [...todos]
-      newTodos.splice(index, 1);
+      const newTodos = todos.filter(todo => todo.id !== id);
       setTodos(newTodos);
     }
   }
-  const onClickEdit = (index) => {
-    setEditIndex(index);
-    setEditText(todos[index].text);
+  const onClickEdit = (todo) => {
+    setEditId(todo.id);
+    setEditText(todo.text);
   }
 
   const onChangeEditText = (e) => {
     setEditText(e.target.value)
   }
 
-
-  const onClickUpdate = (index) => {
+  const onClickUpdate = () => {
     const newTodos = [...todos];
-    newTodos[index].text = editText;
+    newTodos.forEach(todo => {
+      if (todo.id === editId) {
+        todo.text = editText;
+      }
+    });
     setTodos(newTodos);
-    setEditIndex(null);
+    setEditId(null);
   }
 
-  const onChangeCompleted = (index) => {
+  const onChangeCompleted = (id) => {
     const newTodos = [...todos];
-    newTodos[index].isCompleted = !newTodos[index].isCompleted;
+    newTodos.forEach(todo => {
+      if (todo.id === id) {
+        todo.isCompleted = !todo.isCompleted;
+      }
+    });
     setTodos(newTodos);
   }
 
@@ -69,19 +75,19 @@ function App() {
         </div>
         <ul>
 
-          {todos.map((todo, index) => (
+          {todos.map((todo) => (
             <li key={todo.id}>
-              {editIndex === index ? (
+              {editId === todo.id ? (
                 <>
                   <input type="text" value={editText} onChange={onChangeEditText} />
-                  <button onClick={() => onClickUpdate(index)}>更新</button>
+                  <button onClick={() => onClickUpdate()}>更新</button>
                 </>
               ) : (
                 <>
-                  <input type="checkbox" checked={todo.isCompleted} onChange={() => onChangeCompleted(index)} />
+                  <input type="checkbox" checked={todo.isCompleted} onChange={() => onChangeCompleted(todo.id)} />
                   <span>{todo.text}</span>
-                  <button onClick={() => onClickEdit(index)}>編集</button>
-                  <button onClick={() => onClickDelete(index)}>削除</button>
+                  <button onClick={() => onClickEdit(todo)}>編集</button>
+                  <button onClick={() => onClickDelete(todo.id)}>削除</button>
                 </>
               )}
             </li>
